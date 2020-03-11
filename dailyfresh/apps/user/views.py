@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.generic import View
 from apps.user.models import User
+from utils.utils import LoginRequire
 
 # Create your views here.
 
@@ -37,3 +38,22 @@ class LoginView(View):
     @staticmethod
     def get(request):
         return render(request, 'login.html')
+
+
+class UserInfoView(View):
+    @staticmethod
+    @LoginRequire
+    def get(request):
+        return render(request, 'user_center_info.html')
+
+
+class UserOrderView(View):
+    @staticmethod
+    def get(request):
+        return render(request, 'user_center_order.html')
+
+
+class UserSiteView(View):
+    @staticmethod
+    def get(request):
+        return render(request, 'user_center_site.html')
