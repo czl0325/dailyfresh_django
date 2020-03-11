@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^tinymce/', include('tinymce.urls')),
     url(r'^user/', include(('apps.user.urls', 'user'), namespace='apps.user')),
+    url(r'^', include(('apps.goods.urls', 'goods'), namespace='apps.goods'))
 ]

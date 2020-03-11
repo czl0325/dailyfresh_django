@@ -58,3 +58,10 @@
 		</div>
 	</div>
 {% endblock body %}
+{% block js_code %}
+    {% if errmsg %}
+        <script>
+            alert('{{ errmsg }}');
+        </script>
+    {% endif %}
+{% endblock js_code %}
