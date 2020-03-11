@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import View
-from apps.user.models import User
+from apps.user.models import User, Address
 from utils.utils import LoginRequire
+from django.http.response import HttpResponseRedirect
 
 
 # Create your views here.
@@ -59,12 +60,17 @@ class LoginView(View):
             return render(request, 'login.html', {'errmsg': '查无此用户'})
         if password != user.password:
             return render(request, 'login.html', {'errmsg': '密码错误'})
-        request.session["username"] = username
-        response = redirect(reverse("goods:index"))
+        request.session["user_id"] = user.id
+        next_url = request.GET.get("next_url")
+        if next_url is None:
+            response = redirect(reverse("goods:index"))
+        else:
+            response = HttpResponseRedirect(next_url)
         if remember == 'on':
-            response.set_cookie('username', username, max_age=30*24*3600)
+            response.set_cookie('username', username, max_age=30 * 24 * 3600)
         else:
             response.delete_cookie('username')
+
         return response
 
 
@@ -92,3 +98,27 @@ class UserSiteView(View):
     def get(self, request):
         context = {'page': 'site'}
         return render(request, 'user_center_site.html', context)
+
+    def post(self, request):
+        receiver = request.POST.get("receiver")
+        addr = request.POST.get("addr")
+        zip_code = request.POST.get("zip_code")
+        phone = request.POST.get("phone")
+        if not all([receiver, addr, zip_code, phone]):
+            return render(request, 'user_center_site.html', {'errmsg': "信息填写不完整"})
+        addrObj = Address()
+        addrObj.receiver = receiver
+        addrObj.addr = addr
+        addrObj.zip_code = zip_code
+        addrObj.phone = phone
+        count = Address.objects.count()
+        if count == 0:
+            addrObj.is_default = True
+        else:
+            addrObj.is_default = False
+        addrObj.save()
+        if addrObj.is_default == True:
+            address = addrObj
+        else:
+            address = Address.objects.filter(is_default=True)
+        return render(request, 'user_center_site.html', {"address": address})
