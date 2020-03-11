@@ -10,12 +10,10 @@ from utils.utils import LoginRequire
 
 
 class RegisterView(View):
-    @staticmethod
-    def get(request):
+    def get(self, request):
         return render(request, 'register.html')
 
-    @staticmethod
-    def post(request):
+    def post(self, request):
         username = request.POST.get("user_name")
         password = request.POST.get("pwd")
         email = request.POST.get('email')
@@ -40,8 +38,7 @@ class RegisterView(View):
 
 
 class LoginView(View):
-    @staticmethod
-    def get(request):
+    def get(self, request):
         if 'username' in request.COOKIES:
             username = request.COOKIES.get('username')
             checked = 'checked'
@@ -50,8 +47,7 @@ class LoginView(View):
             checked = ''
         return render(request, 'login.html', {'username': username, 'checked': checked})
 
-    @staticmethod
-    def post(request):
+    def post(self, request):
         username = request.POST.get("username")
         password = request.POST.get("pwd")
         remember = request.POST.get("remember")
@@ -74,25 +70,25 @@ class LoginView(View):
 
 @method_decorator(LoginRequire, name='get')
 class UserInfoView(View):
-    @staticmethod
-    def get(request):
+    def get(self, request):
         username = request.session.get("username")
         try:
             user = User.objects.get(username=username)
         except:
             return redirect(reverse("user:login"))
-        return render(request, 'user_center_info.html', {'user': user})
+        context = {'page': 'info'}
+        return render(request, 'user_center_info.html', context)
 
 
 @method_decorator(LoginRequire, name='dispatch')
 class UserOrderView(View):
-    @staticmethod
-    def get(request):
-        return render(request, 'user_center_order.html')
+    def get(self, request):
+        context = {'page': 'order'}
+        return render(request, 'user_center_order.html', context)
 
 
+@method_decorator(LoginRequire, name='get')
 class UserSiteView(View):
-    @staticmethod
-    @LoginRequire
-    def get(request):
-        return render(request, 'user_center_site.html')
+    def get(self, request):
+        context = {'page': 'site'}
+        return render(request, 'user_center_site.html', context)
