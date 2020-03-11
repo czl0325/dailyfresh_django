@@ -5,6 +5,7 @@ from django.views.generic import View
 from apps.user.models import User, Address
 from utils.utils import LoginRequire
 from django.http.response import HttpResponseRedirect
+from django.forms.models import model_to_dict
 
 
 # Create your views here.
@@ -96,7 +97,8 @@ class UserOrderView(View):
 @method_decorator(LoginRequire, name='get')
 class UserSiteView(View):
     def get(self, request):
-        context = {'page': 'site'}
+        address = Address.objects.filter(is_default=True).first()
+        context = {'page': 'site', "address": address}
         return render(request, 'user_center_site.html', context)
 
     def post(self, request):
@@ -107,6 +109,9 @@ class UserSiteView(View):
         if not all([receiver, addr, zip_code, phone]):
             return render(request, 'user_center_site.html', {'errmsg': "信息填写不完整"})
         addrObj = Address()
+        addrObj.user_id = request.session.get("user_id")
+        if addrObj.user_id is None:
+            return HttpResponseRedirect("/user/login?next_url=" + request.path)
         addrObj.receiver = receiver
         addrObj.addr = addr
         addrObj.zip_code = zip_code
@@ -117,8 +122,8 @@ class UserSiteView(View):
         else:
             addrObj.is_default = False
         addrObj.save()
-        if addrObj.is_default == True:
+        if addrObj.is_default:
             address = addrObj
         else:
-            address = Address.objects.filter(is_default=True)
+            address = Address.objects.filter(is_default=True).first()
         return render(request, 'user_center_site.html', {"address": address})
