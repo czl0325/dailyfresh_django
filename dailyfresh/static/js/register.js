@@ -8,19 +8,19 @@ $(function(){
 
 
 	$('#user_name').blur(function() {
-		check_user_name();
+		//check_user_name();
 	});
 
 	$('#pwd').blur(function() {
-		check_pwd();
+		//check_pwd();
 	});
 
 	$('#cpwd').blur(function() {
-		check_cpwd();
+		//check_cpwd();
 	});
 
 	$('#email').blur(function() {
-		check_email();
+		//check_email();
 	});
 
 	$('#allow').click(function() {
@@ -106,6 +106,7 @@ $(function(){
 
 
 	$('#reg_form').submit(function() {
+		return true
 		check_user_name();
 		check_pwd();
 		check_cpwd();
