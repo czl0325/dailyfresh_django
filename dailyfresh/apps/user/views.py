@@ -78,12 +78,13 @@ class LoginView(View):
 @method_decorator(LoginRequire, name='get')
 class UserInfoView(View):
     def get(self, request):
-        username = request.session.get("username")
+        user_id = request.session.get("user_id")
         try:
-            user = User.objects.get(username=username)
+            user = User.objects.get(id=user_id)
         except:
             return redirect(reverse("user:login"))
-        context = {'page': 'info'}
+        address = Address.objects.filter(is_default=True).first()
+        context = {'page': 'info', 'user': user, 'address': address}
         return render(request, 'user_center_info.html', context)
 
 
@@ -126,4 +127,4 @@ class UserSiteView(View):
             address = addrObj
         else:
             address = Address.objects.filter(is_default=True).first()
-        return render(request, 'user_center_site.html', {"address": address})
+        return render(request, 'user_center_site.html', {'page': 'site', "address": address})
