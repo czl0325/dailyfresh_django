@@ -75,6 +75,12 @@ class LoginView(View):
         return response
 
 
+class LogOutView(View):
+    def get(self, request):
+        del request.session['user_id']
+        return redirect(reverse("goods:index"))
+
+
 @method_decorator(LoginRequire, name='get')
 class UserInfoView(View):
     def get(self, request):
@@ -83,7 +89,7 @@ class UserInfoView(View):
             user = User.objects.get(id=user_id)
         except:
             return redirect(reverse("user:login"))
-        address = Address.objects.filter(is_default=True).first()
+        address = Address.objects.get_default_address(user)
         context = {'page': 'info', 'user': user, 'address': address}
         return render(request, 'user_center_info.html', context)
 
@@ -109,16 +115,17 @@ class UserSiteView(View):
         phone = request.POST.get("phone")
         if not all([receiver, addr, zip_code, phone]):
             return render(request, 'user_center_site.html', {'errmsg': "信息填写不完整"})
-        addrObj = Address()
-        addrObj.user_id = request.session.get("user_id")
-        if addrObj.user_id is None:
+        user = User.objects.get(id=request.session.get("user_id"))
+        if user is None:
             return HttpResponseRedirect("/user/login?next_url=" + request.path)
+        addrObj = Address()
+        addrObj.user = user
         addrObj.receiver = receiver
         addrObj.addr = addr
         addrObj.zip_code = zip_code
         addrObj.phone = phone
-        count = Address.objects.count()
-        if count == 0:
+        address_default = Address.objects.get_default_address(user)
+        if address_default is None:
             addrObj.is_default = True
         else:
             addrObj.is_default = False
@@ -126,5 +133,5 @@ class UserSiteView(View):
         if addrObj.is_default:
             address = addrObj
         else:
-            address = Address.objects.filter(is_default=True).first()
+            address = address_default
         return render(request, 'user_center_site.html', {'page': 'site', "address": address})
