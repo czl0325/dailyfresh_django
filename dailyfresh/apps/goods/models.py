@@ -10,13 +10,14 @@ class GoodsType(BaseModel):
     logo = models.CharField(max_length=20, verbose_name='标识')
     image = models.ImageField(upload_to='type', verbose_name='商品类型图片')
 
+    def __str__(self):
+        return self.name
+
     class Meta:
         db_table = 'df_goods_type'
         verbose_name = '商品种类'
         verbose_name_plural = verbose_name
 
-    def __str__(self):
-        return self.name
 
 
 class GoodsSKU(BaseModel):
@@ -36,6 +37,9 @@ class GoodsSKU(BaseModel):
     sales = models.IntegerField(default=0, verbose_name='商品销量')
     status = models.SmallIntegerField(default=1, choices=status_choices, verbose_name='商品状态')
 
+    def __str__(self):
+        return self.name
+
     class Meta:
         db_table = 'df_goods_sku'
         verbose_name = '商品'
@@ -47,6 +51,9 @@ class Goods(BaseModel):
     name = models.CharField(max_length=20, verbose_name='商品SPU名称')
     # 富文本类型:带有格式的文本
     detail = HTMLField(blank=True, verbose_name='商品详情')
+
+    def __str__(self):
+        return self.name
 
     class Meta:
         db_table = 'df_goods'

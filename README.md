@@ -10,4 +10,5 @@ pip install django-tinymce      # 富文本编辑器		2.8.0
 pip install Pillow              # ImageField使用		7.0.0
 pip install PyMySQL             # mysql数据库		0.9.3	
 pip install django-redis        # redis数据库      4.11.0
+pip install py3Fdfs
 ```

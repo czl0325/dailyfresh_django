@@ -129,3 +129,14 @@ USE_TZ = True
 STATIC_URL = '/static/'
 # STATIC_ROOT = [os.path.join(BASE_DIR, 'static/')]
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static/')]
+
+# 上传文件路径
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# 设置django文件存储类
+# DEFAULT_FILE_STORAGE = 'utils.df_file_storage.DFFileSystemStorage'
+
+# fdfs配置
+FDFS_CLIENT_CONF = "/etc/fdfs/client.conf"
+FDFS_URL = "http://10.188.180.124:8888"
