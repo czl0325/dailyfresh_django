@@ -6,6 +6,7 @@ from apps.user.models import User, Address
 from utils.utils import LoginRequire
 from django.http.response import HttpResponseRedirect
 from django.forms.models import model_to_dict
+from django_redis import get_redis_connection
 
 
 # Create your views here.
@@ -90,6 +91,11 @@ class UserInfoView(View):
         except:
             return redirect(reverse("user:login"))
         address = Address.objects.get_default_address(user)
+        if user_id is not None:
+            conn = get_redis_connection('default')
+            history_key = "history_%d" % request.session["user_id"]
+            goods_li = conn.lrange(history_key, 0, 4)
+            print(goods_li)
         context = {'page': 'info', 'user': user, 'address': address}
         return render(request, 'user_center_info.html', context)
 

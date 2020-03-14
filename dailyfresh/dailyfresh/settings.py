@@ -140,3 +140,15 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # fdfs配置
 FDFS_CLIENT_CONF = "/etc/fdfs/client.conf"
 FDFS_URL = "http://10.188.180.124:8888"
+
+
+# Django的缓存配置
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/9",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
