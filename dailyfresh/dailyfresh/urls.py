@@ -24,5 +24,6 @@ urlpatterns = [
     url(r'^tinymce/', include('tinymce.urls')),
     re_path(r'^media/(?P<path>.*)$', serve, {"document_root": settings.MEDIA_ROOT}),
     url(r'^user/', include(('apps.user.urls', 'user'), namespace='apps.user')),
-    url(r'^', include(('apps.goods.urls', 'goods'), namespace='apps.goods'))
+    url(r'^cart/', include(('apps.cart.urls', 'cart'), namespace='apps.cart')),
+    url(r'^', include(('apps.goods.urls', 'goods'), namespace='apps.goods')),
 ]

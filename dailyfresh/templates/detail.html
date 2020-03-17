@@ -24,7 +24,7 @@
             <div class="goods_num clearfix">
                 <div class="num_name fl">数 量：</div>
                 <div class="num_add fl">
-                    <input type="text" class="num_show fl" value="1">
+                    <input type="number" class="num_show fl" value="1">
                     <a href="javascript:;" class="add fr">+</a>
                     <a href="javascript:;" class="minus fr">-</a>
                 </div>
@@ -37,10 +37,11 @@
                     {% endfor %}
                 </ul>
             </div>
-            <div class="total">总价：<em>16.80元</em></div>
+            <div class="total">总价：<em>元</em></div>
             <div class="operate_btn">
+                {% csrf_token %}
                 <a href="javascript:;" class="buy_btn">立即购买</a>
-                <a href="javascript:;" class="add_cart" id="add_cart">加入购物车</a>
+                <a href="javascript:;" class="add_cart" id="add_cart" sku_id="{{ sku.id }}">加入购物车</a>
             </div>
         </div>
     </div>
@@ -91,11 +92,21 @@
 {% block js_code %}
     <script type="text/javascript" src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
     <script type="text/javascript">
+        function update_goods_amount() {
+            count = $(".num_show").val()
+            price = $(".show_pirze").children('em').text()
+            count = parseInt(count)
+            price = parseFloat(price)
+            amount = price * count
+            $(".total").children('em').text(amount.toFixed(2) + "元")
+        }
+        update_goods_amount()
         $(".add").click(function () {
             num = $(".num_show").val()
             num = parseInt(num) + 1
             $(".num_show").val(num)
-        })
+            update_goods_amount()
+        });
         $(".minus").click(function () {
             num = $(".num_show").val()
             num = parseInt(num) - 1
@@ -103,33 +114,49 @@
                 num = 1
             }
             $(".num_show").val(num)
-        })
-        $(".num_show").bind("input propertychange", function () {
-            console.log("输入");
+            update_goods_amount()
         });
-        $(".num_show").onchange(function () {
-            num = $(this).val()
-            console.log(num)
+        $(".num_show").blur(function () {
+            count = $(this).val()
+            if (isNaN(count) || count.trim().length <= 0 || parseInt(count) < 0) {
+                count = 1
+                $(this).val(count)
+            }
+            update_goods_amount()
+        });
+        //添加购物车请求
+        $("#add_cart").click(function () {
+            sku_id = $(this).attr("sku_id")
+            count = $(".num_show").val()
+            csrf_token = $("input[name='csrfmiddlewaretoken']").val()
+            params = {"sku_id": sku_id, "count": count, "csrfmiddlewaretoken": csrf_token}
+            $.post('/cart/add', params, function (data) {
+                if (data.result == 0) {
+                    addCartAnim(data.cart_total)
+                } else {
+                    alert(data.message)
+                }
+            })
         })
 
-        var $add_x = $('#add_cart').offset().top;
-        var $add_y = $('#add_cart').offset().left;
+        function addCartAnim(cart_total) {
+            var $add_x = $('#add_cart').offset().top;
+            var $add_y = $('#add_cart').offset().left;
 
-        var $to_x = $('#show_count').offset().top;
-        var $to_y = $('#show_count').offset().left;
+            var $to_x = $('#show_count').offset().top;
+            var $to_y = $('#show_count').offset().left;
 
-        $(".add_jump").css({'left': $add_y + 80, 'top': $add_x + 10, 'display': 'block'})
-        $('#add_cart').click(function () {
+            $(".add_jump").css({'left': $add_y + 80, 'top': $add_x + 10, 'display': 'block'})
             $(".add_jump").stop().animate({
                     'left': $to_y + 7,
                     'top': $to_x + 7
                 },
-                "fast", function () {
-                    $(".add_jump").fadeOut('fast', function () {
-                        $('#show_count').html(2);
+                2500, function () {
+                    $(".add_jump").fadeOut(800, function () {
+                        $('#show_count').html(cart_total);
                     });
-
                 });
-        })
+        }
+
     </script>
 {% endblock js_code %}

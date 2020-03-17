@@ -1,0 +1,113 @@
+{% extends 'base_no_cart.html' %}
+{% load static %}
+{% block title %}天天生鲜-购物车{% endblock title %}
+{% block page_title %}购物车{% endblock page_title %}
+{% block body %}
+    <div class="total_count">全部商品<em>{{ total_count }}</em>件</div>
+    <ul class="cart_list_th clearfix">
+        <li class="col01">商品名称</li>
+        <li class="col02">商品单位</li>
+        <li class="col03">商品价格</li>
+        <li class="col04">数量</li>
+        <li class="col05">小计</li>
+        <li class="col06">操作</li>
+    </ul>
+    {% csrf_token %}
+    {% for sku in skus %}
+        <ul class="cart_list_td clearfix">
+            <li class="col01"><input type="checkbox" name="" checked></li>
+            <li class="col02"><img src="{{ sku.image.url }}"></li>
+            <li class="col03">{{ sku.name }}<br><em>{{ sku.price }}元/{{ sku.unite }}</em></li>
+            <li class="col04">{{ sku.unite }}</li>
+            <li class="col05">{{ sku.price }}元</li>
+            <li class="col06">
+                <div class="num_add">
+                    <a href="javascript:;" class="add fl" sku_id="{{ sku.id }}">+</a>
+                    <input type="number" class="num_show fl" value="{{ sku.count }}">
+                    <a href="javascript:;" class="minus fl" sku_id="{{ sku.id }}">-</a>
+                </div>
+            </li>
+            <li class="col07">{{ sku.amount }}元</li>
+            <li class="col08"><a href="javascript:;">删除</a></li>
+        </ul>
+    {% endfor %}
+    <ul class="settlements">
+        <li class="col01"><input type="checkbox" name="" checked=""></li>
+        <li class="col02">全选</li>
+        <li class="col03">合计(不含运费)：<span>¥</span><em>{{ total_price }}</em><br>共计<b>{{ total_count }}</b>件商品</li>
+        <li class="col04"><a href="place_order.html">去结算</a></li>
+    </ul>
+{% endblock body %}
+{% block js_code %}
+    <script type="text/javascript" src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+    <script type="text/javascript">
+        function update_page_info() {
+            total_count = 0
+            total_price = 0
+            $(".cart_list_td").find(":checked").parents('ul').each(function () {
+                count = $(this).find('.num_show').val()
+                price = $(this).children('.col05').text()
+                amount = parseFloat(price) * parseInt(count)
+                total_count += parseInt(count)
+                total_price += amount
+                $(this).children('col07').text(amount.toFixed(2))
+            })
+            $(".total_count").children('em').text(total_count)
+            $(".settlements").children('.col03').children('em').text(total_price.toFixed(2))
+            $(".settlements").children('.col03').children('b').text(total_count)
+        }
+
+        function requestUpdateCart(element, sku_id, count) {
+            csrf_token = $("input[name='csrfmiddlewaretoken']").val()
+            params = {"sku_id": sku_id, "count": count, "csrfmiddlewaretoken": csrf_token}
+            $.post("/cart/update", params, function (data) {
+                if (data.result == 0) {
+                    update_page_info()
+                } else {
+                    alert(message)
+                    if (data.stock) {
+                        element.next().val(data.stock)
+                    }
+                }
+            })
+        }
+
+        $('.cart_list_td').find('.add').click(function () {
+            sku_id = $(this).attr("sku_id")
+            count = $(this).next().val()
+            count = parseInt(count) + 1
+            $(this).next().val(count)
+            requestUpdateCart($(this), sku_id, count)
+        });
+        $('.cart_list_td').find('.minus').click(function () {
+            sku_id = $(this).attr("sku_id")
+            count = $(this).prev().val()
+            count = parseInt(count) - 1
+            if (count <= 0) {
+                count = 1
+            } else {
+                $(this).prev().val(count)
+                requestUpdateCart($(this), sku_id, count)
+            }
+        });
+        $(".cart_list_td").find(":checkbox").change(function () {
+            // 获取页面上所有商品的数目
+            all_len = $('.cart_list_td').length
+            // 获取页面上被选中的商品的数目
+            checked_len = $('.cart_list_td').find(":checked").length
+            is_check = true
+            if (checked_len < all_len) {
+                is_check = false
+            }
+            $(".settlements").find(":checkbox").prop("checked", is_check)
+            update_page_info()
+        });
+        $(".settlements").find(":checkbox").change(function () {
+            is_check = $(this).prop("checked")
+            $(".cart_list_td").find(":checkbox").each(function () {
+                $(this).prop("checked", is_check)
+            })
+            update_page_info()
+        })
+    </script>
+{% endblock js_code %}
