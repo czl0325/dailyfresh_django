@@ -87,7 +87,7 @@ class UserInfoView(View):
         user_id = request.session.get("user_id")
         try:
             user = User.objects.get(id=user_id)
-        except:
+        except User.DoesNotExist:
             return redirect(reverse("user:login"))
         address = Address.objects.get_default_address(user)
         goods_li = []
@@ -105,15 +105,25 @@ class UserInfoView(View):
 @method_decorator(LoginRequire, name='dispatch')
 class UserOrderView(View):
     def get(self, request):
-        context = {'page': 'order'}
+        user_id = request.session.get("user_id")
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return redirect(reverse("user:login"))
+        context = {'page': 'order', "user": user}
         return render(request, 'user_center_order.html', context)
 
 
 @method_decorator(LoginRequire, name='get')
 class UserSiteView(View):
     def get(self, request):
+        user_id = request.session.get("user_id")
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return redirect(reverse("user:login"))
         address = Address.objects.filter(is_default=True).first()
-        context = {'page': 'site', "address": address}
+        context = {'page': 'site', "address": address, "user": user}
         return render(request, 'user_center_site.html', context)
 
     def post(self, request):

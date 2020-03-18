@@ -21,8 +21,9 @@ from django.views.static import serve
 
 urlpatterns = [
     re_path('admin/', admin.site.urls),
-    url(r'^tinymce/', include('tinymce.urls')),
-    re_path(r'^media/(?P<path>.*)$', serve, {"document_root": settings.MEDIA_ROOT}),
+    re_path('^tinymce/', include('tinymce.urls')),
+    re_path('^search', include('haystack.urls')),
+    re_path('^media/(?P<path>.*)$', serve, {"document_root": settings.MEDIA_ROOT}),
     url(r'^user/', include(('apps.user.urls', 'user'), namespace='apps.user')),
     url(r'^cart/', include(('apps.cart.urls', 'cart'), namespace='apps.cart')),
     url(r'^', include(('apps.goods.urls', 'goods'), namespace='apps.goods')),
