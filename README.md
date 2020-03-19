@@ -13,7 +13,7 @@ pip install django-redis        # redis数据库      4.11.0
 pip install py3Fdfs
 pip install django-haystack
 pip install whoosh
-pip install jieba
+pip install jieba               # 分词    0.42.1
 ```
 
 [集成fastdfs图片上传框架](https://www.jianshu.com/p/7cccbdd36602)

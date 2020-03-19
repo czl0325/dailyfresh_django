@@ -26,5 +26,6 @@ urlpatterns = [
     re_path('^media/(?P<path>.*)$', serve, {"document_root": settings.MEDIA_ROOT}),
     url(r'^user/', include(('apps.user.urls', 'user'), namespace='apps.user')),
     url(r'^cart/', include(('apps.cart.urls', 'cart'), namespace='apps.cart')),
+    url(r'^order/', include(('apps.order.urls', 'order'), namespace='apps.order')),
     url(r'^', include(('apps.goods.urls', 'goods'), namespace='apps.goods')),
 ]

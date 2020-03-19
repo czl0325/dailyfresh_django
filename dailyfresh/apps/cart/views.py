@@ -35,6 +35,7 @@ class AddCartView(View):
         return JsonResponse({"result": 0, "message": "加入购物车成功", "cart_total": total})
 
 
+@method_decorator(LoginRequire, name='get')
 class CartListView(View):
     def get(self, request):
         user_id = request.session["user_id"]
@@ -56,6 +57,7 @@ class CartListView(View):
         return render(request, 'cart.html', context)
 
 
+@method_decorator(LoginRequire, name='post')
 class CartUpdateView(View):
     def post(self, request):
         sku_id = request.POST.get("sku_id")

@@ -388,7 +388,7 @@ html,body{height:100%}
 .settlements .col03 b{color:#ff0000;font-size:14px;padding:0 5px;}
 
 .settlements .col04{width:14%;text-align:center;float:right;}
-.settlements .col04 a{display:block;height:78px;background-color:#ff3d3d;text-align:center;line-height:78px;color:#fff;font-size:24px}
+.settlements .col04 input{height:78px;background-color:#ff3d3d;text-align:center;line-height:78px;color:white;font-size:24px;outline-style:none;border:0;width: 100%;}
 
 
 .common_title{width:1200px;margin:20px auto 0;font-size:14px;}
@@ -397,7 +397,8 @@ html,body{height:100%}
 
 .common_list_con dl{margin:20px;}
 .common_list_con dt{font-size:14px;font-weight:bold;margin-bottom:10px}
-.common_list_con dd input{vertical-align:bottom;margin-right:10px}
+.common_list_con dd label{height:30px;}
+.common_list_con dd label input{line-height:30px;margin-right:10px;}
 
 .edit_site{position:absolute; right:20px;top:30px;width:100px;height:30px;background-color:#37ab40;text-align:center;line-height:30px;color:#fff}
 
