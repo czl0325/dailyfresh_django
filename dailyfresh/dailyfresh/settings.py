@@ -158,7 +158,7 @@ CACHES = {
 HAYSTACK_CONNECTIONS = {
     'default': {
         # 使用whoosh引擎
-        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'ENGINE': 'haystack.backends.whoosh_cn_backend.WhooshEngine',
         # 索引文件路径
         'PATH': os.path.join(BASE_DIR, 'whoosh_index'),
     }
