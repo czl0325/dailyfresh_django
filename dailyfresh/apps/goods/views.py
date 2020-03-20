@@ -65,7 +65,7 @@ class GoodsDetailView(View):
                         total += int(num)
         except Exception as e:
             print(e)
-        context = {'sku': sku, "new_skus": new_skus, "same_spu_skus": same_spu_skus, "cart_total": total}
+        context = {'sku': sku, "new_skus": new_skus, "same_spu_skus": same_spu_skus, "cart_count": total}
         return render(request, 'detail.html', context)
 
 

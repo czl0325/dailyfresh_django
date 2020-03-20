@@ -6,8 +6,12 @@ from apps.user.models import User, Address
 from utils.utils import LoginRequire
 from django.http.response import HttpResponseRedirect
 from django.forms.models import model_to_dict
+from django.core.paginator import Paginator
 from django_redis import get_redis_connection
 from apps.goods.models import GoodsSKU
+from apps.order.models import OrderInfo, OrderGoods
+
+
 # Create your views here.
 
 
@@ -77,7 +81,8 @@ class LoginView(View):
 
 class LogOutView(View):
     def get(self, request):
-        del request.session['user_id']
+        if request.session.get("user_id") is not None:
+            del request.session['user_id']
         return redirect(reverse("goods:index"))
 
 
@@ -104,13 +109,45 @@ class UserInfoView(View):
 
 @method_decorator(LoginRequire, name='dispatch')
 class UserOrderView(View):
-    def get(self, request):
+    def get(self, request, page):
         user_id = request.session.get("user_id")
         try:
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
             return redirect(reverse("user:login"))
-        context = {'page': 'order', "user": user}
+        orders = OrderInfo.objects.filter(user=user).order_by("-create_time")
+        for order in orders:
+            order_skus = OrderGoods.objects.filter(order=order)
+            for order_sku in order_skus:
+                amount = order_sku.price * order_sku.count
+                order_sku.amount = amount
+            order.status_name = OrderInfo.ORDER_STATUS[order.order_status]
+            order.order_skus = order_skus
+        # 分页
+        paginator = Paginator(orders, 1)
+        try:
+            page = int(page)
+        except Exception as e:
+            page = 1
+        if page > paginator.num_pages:
+            page = 1
+        # 获取第page页的Page实例对象
+        order_page = paginator.page(page)
+        # todo: 进行页码的控制，页面上最多显示5个页码
+        # 1.总页数小于5页，页面上显示所有页码
+        # 2.如果当前页是前3页，显示1-5页
+        # 3.如果当前页是后3页，显示后5页
+        # 4.其他情况，显示当前页的前2页，当前页，当前页的后2页
+        num_pages = paginator.num_pages
+        if num_pages < 5:
+            pages = range(1, num_pages + 1)
+        elif page <= 3:
+            pages = range(1, 5)
+        elif page >= num_pages - 2:
+            pages = range(num_pages - 4, num_pages + 1)
+        else:
+            pages = range(page - 2, page + 3)
+        context = {'order_page': order_page, 'pages': pages, "user": user}
         return render(request, 'user_center_order.html', context)
 
 

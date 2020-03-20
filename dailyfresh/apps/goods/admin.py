@@ -1,5 +1,20 @@
 from django.contrib import admin
+from django.core.cache import cache
 from apps.goods.models import GoodsType, GoodsSKU, Goods, GoodsImage, IndexGoodsBanner, IndexPromotionBanner, IndexTypeGoodsBanner
+
+
+class BaseModelAdmin(admin.ModelAdmin):
+    def save_model(self, request, obj, form, change):
+        """新增或更新表中的数据时调用"""
+        super().save_model(request, obj, form, change)
+        # 清除首页的缓存数据
+        cache.delete('index_page_data')
+
+    def delete_model(self, request, obj):
+        """删除表中的数据时调用"""
+        super().delete_model(request, obj)
+        # 清除首页的缓存数据
+        cache.delete('index_page_data')
 
 
 class GoodsTypeAdmin(admin.ModelAdmin):

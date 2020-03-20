@@ -20,6 +20,7 @@
             <div class="prize_bar">
                 <span class="show_pirze">¥<em>{{ sku.price }}</em></span>
                 <span class="show_unit">单  位：{{ sku.unite }}</span>
+                <span class="show_unit">库  存：{{ sku.stock }}</span>
             </div>
             <div class="goods_num clearfix">
                 <div class="num_name fl">数 量：</div>
@@ -132,14 +133,14 @@
             params = {"sku_id": sku_id, "count": count, "csrfmiddlewaretoken": csrf_token}
             $.post('/cart/add', params, function (data) {
                 if (data.result == 0) {
-                    addCartAnim(data.cart_total)
+                    addCartAnim(data.cart_count)
                 } else {
                     alert(data.message)
                 }
             })
         })
 
-        function addCartAnim(cart_total) {
+        function addCartAnim(cart_count) {
             var $add_x = $('#add_cart').offset().top;
             var $add_y = $('#add_cart').offset().left;
 
@@ -153,7 +154,7 @@
                 },
                 2500, function () {
                     $(".add_jump").fadeOut(800, function () {
-                        $('#show_count').html(cart_total);
+                        $('#show_count').html(cart_count);
                     });
                 });
         }

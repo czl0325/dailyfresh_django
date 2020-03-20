@@ -80,14 +80,14 @@
     </div>
 {% endblock alert %}
 {% block js_code %}
-    <script type="text/javascript" src="{% static 'js/jquery-3.4.1.min.js' %}"/>
+    <script type="text/javascript" src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
     <script type="text/javascript">
         $("#order_btn").click(function () {
             addr_id = $("input[name='addr_id']:checked").val()
             pay_method = $("input[name='pay_style']:checked").val()
             sku_ids = $(this).attr("sku_ids")
             csrf = $('input[name="csrfmiddlewaretoken"]').val()
-            params = {"addr_id": addr_id, "pay_method": pay_method, "sku_ids": sku_ids, "csrf": csrf}
+            params = {"addr_id": addr_id, "pay_method": pay_method, "sku_ids": sku_ids, "csrfmiddlewaretoken": csrf}
             $.post("/order/commit", params, function (data) {
                 if (data.result == 0) {
                     $('.popup_con').fadeIn('normal', function () {

@@ -9,11 +9,12 @@ from django.http import JsonResponse
 # Create your views here.
 
 
-@method_decorator(LoginRequire, name='post')
 class AddCartView(View):
     def post(self, request):
+        user_id = request.session.get("user_id")
+        if user_id is None:
+            return JsonResponse({"result": 100, "message": "请先登录"})
         sku_id = request.POST.get("sku_id")
-        user_id = request.session["user_id"]
         count = request.POST.get("count")
         if not all([sku_id, count]):
             return JsonResponse({"result": 100, "message": "数据不完整"})
@@ -32,7 +33,7 @@ class AddCartView(View):
         if cart_total is not None:
             for num in cart_total:
                 total += int(num)
-        return JsonResponse({"result": 0, "message": "加入购物车成功", "cart_total": total})
+        return JsonResponse({"result": 0, "message": "加入购物车成功", "cart_count": total})
 
 
 @method_decorator(LoginRequire, name='get')
