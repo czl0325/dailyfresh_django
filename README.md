@@ -21,4 +21,5 @@ pip install python-alipay-sdk --upgrade     # 支付宝支付的插件
 本项目没有用到，本项目采用了django自带的图片上传方式
 - [django集成whoosh全局搜索引擎](https://www.jianshu.com/p/11901d3765b4)
 - [集成支付宝支付插件](https://github.com/fzlee/alipay/blob/master/README.zh-hans.md)
+- django通过数据库反向生成model类的命令  `python manage.py inspectdb`
 
