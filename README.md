@@ -11,8 +11,8 @@ pip install Pillow              # ImageField使用		7.0.0
 pip install PyMySQL             # mysql数据库		0.9.3	
 pip install django-redis        # redis数据库      4.11.0
 pip install py3Fdfs
-pip install django-haystack
-pip install whoosh
+pip install django-haystack     # 搜索引擎  2.8.1
+pip install whoosh              # 搜索引擎  2.7.4
 pip install jieba               # 分词    0.42.1
 pip install python-alipay-sdk --upgrade     # 支付宝支付的插件  
 ```
